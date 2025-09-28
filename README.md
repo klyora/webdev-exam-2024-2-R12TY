@@ -1,1 +1,9 @@
-# webdev-exam-2024-2-R12TY
+[Сайт](https://webdev-exam-2024-2-r12ty.onrender.com/)
+
+Пароль для всех пользователей: qwerty
+
+Админ: admin
+
+Модератор: moder
+
+Пользователи: user1, user2, user3
