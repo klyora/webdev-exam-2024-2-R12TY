@@ -1,41 +1,45 @@
+# elib/config.py
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-BASE_DIR = Path(__file__).resolve().parent
-APP_DIR = BASE_DIR / "elib"
-STATIC_DIR = APP_DIR / "static"
-COVERS_DIR = STATIC_DIR / "covers"
+def _normalize_mysql_url(url: str | None) -> str | None:
+    if not url:
+        return None
+    if url.startswith("mysql://"):
+        return "mysql+mysqlconnector://" + url[len("mysql://"):]
+    if url.startswith("mysql+mysqldb://"):
+        return "mysql+mysqlconnector://" + url[len("mysql+mysqldb://"):]
+    if url.startswith("mysql+pymysql://"):
+        return "mysql+mysqlconnector://" + url[len("mysql+pymysql://"):]
+    return url
 
 class Config:
-    SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
-    ENV = os.getenv("FLASK_ENV", "production")
-
-    MYSQL_USER = os.getenv("MYSQL_USER", "user")
-    MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "qwerty")
-    MYSQL_HOST = os.getenv("MYSQL_HOST", "127.0.0.1")
-    MYSQL_DB = os.getenv("MYSQL_DB", "std_0000_exam")
-
-    SQLALCHEMY_DATABASE_URI = (
-        f"mysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}/{MYSQL_DB}"
-        "?charset=utf8mb4"
-    )
+    SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    _env_url = os.getenv("DATABASE_URL")
+    _env_url = _normalize_mysql_url(_env_url)
+
+    if not _env_url:
+        db_user = os.getenv("DB_USER", "user")
+        db_pass = os.getenv("DB_PASSWORD", "pass")
+        db_host = os.getenv("DB_HOST", "127.0.0.1")
+        db_port = os.getenv("DB_PORT", "3306")
+        db_name = os.getenv("DB_NAME", "elib")
+        _env_url = (
+            f"mysql+mysqlconnector://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
+            f"?charset=utf8mb4"
+        )
+
+    SQLALCHEMY_DATABASE_URI = _env_url
+
     PAGE_SIZE = int(os.getenv("PAGE_SIZE", "10"))
+    COVERS_DIR = os.getenv("COVERS_DIR", str(BASE_DIR / "static" / "covers"))
 
-    STATIC_FOLDER = str(STATIC_DIR)
-    COVERS_DIR = str(COVERS_DIR)
-    ALLOWED_COVER_MIME = {"image/jpeg", "image/png", "image/webp"}
-    MAX_CONTENT_LENGTH = 10 * 1024 * 1024
+class ProductionConfig(Config):
+    pass
 
-    MARKDOWN_EXTENSIONS = [
-        "extra",
-        "sane_lists",
-        "nl2br",
-    ]
-
-    NH3_ALLOWED_TAGS = None
-    NH3_ALLOWED_ATTRS = None
+class DevelopmentConfig(Config):
+    pass
