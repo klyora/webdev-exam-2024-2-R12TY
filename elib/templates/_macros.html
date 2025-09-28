@@ -1,0 +1,80 @@
+{% macro book_fields(mode='create', book=None, genres=[], selected_genres=None, form=None) -%}
+
+  <div class="mb-3">
+    <label for="title" class="form-label">Название</label>
+    <input id="title" name="title" type="text" class="form-control" required
+           value="{{ (form.get('title') if form and form.get('title') is not none else (book.title if book else '')) }}">
+  </div>
+
+  <div class="mb-3">
+    <label for="short_description" class="form-label">Краткое описание (Markdown)</label>
+    <textarea id="short_description" name="short_description"
+              class="form-control" rows="8" required data-markdown="1">{{ (form.get('short_description') if form and form.get('short_description') is not none else (book.short_description if book else '')) }}</textarea>
+    <div class="form-text">
+      Поддерживается Markdown. Скрипты и опасные теги будут автоматически очищены.
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-6 col-md-3">
+      <label for="year" class="form-label">Год</label>
+      <input id="year" name="year" type="number" min="1000" max="2100" class="form-control" required
+             value="{{ (form.get('year') if form and form.get('year') is not none else (book.year if book else '')) }}">
+    </div>
+    <div class="col-6 col-md-3">
+      <label for="pages" class="form-label">Объём (стр.)</label>
+      <input id="pages" name="pages" type="number" min="1" class="form-control" required
+             value="{{ (form.get('pages') if form and form.get('pages') is not none else (book.pages if book else '')) }}">
+    </div>
+    <div class="col-12 col-md-6">
+      <label for="publisher" class="form-label">Издательство</label>
+      <input id="publisher" name="publisher" type="text" class="form-control" required
+             value="{{ (form.get('publisher') if form and form.get('publisher') is not none else (book.publisher if book else '')) }}">
+    </div>
+  </div>
+
+  <div class="mb-3 mt-3">
+    <label for="author" class="form-label">Автор</label>
+    <input id="author" name="author" type="text" class="form-control" required
+           value="{{ (form.get('author') if form and form.get('author') is not none else (book.author if book else '')) }}">
+  </div>
+
+  <div class="mb-3">
+    <label for="genres" class="form-label">Жанры</label>
+    <select id="genres" name="genres" class="form-select" multiple size="6" required>
+      {% set selected = selected_genres if selected_genres is not none else [] %}
+      {% for g in genres %}
+        {% set sel = (g.id in selected) or (form and (g.id|string in form.getlist('genres'))) %}
+        <option value="{{ g.id }}" {% if sel %}selected{% endif %}>{{ g.name }}</option>
+      {% endfor %}
+    </select>
+    <div class="form-text">Удерживайте Ctrl/Cmd для выбора нескольких жанров.</div>
+  </div>
+
+  {% if mode == 'create' %}
+    <div class="mb-3">
+      <label for="cover" class="form-label">Обложка (JPEG/PNG/WebP)</label>
+      <input id="cover" name="cover" type="file" class="form-control" accept="image/*" required>
+      <div class="form-text">Файл обязателен при создании. Максимум 10 МБ.</div>
+    </div>
+  {% endif %}
+{%- endmacro %}
+
+
+{% macro rating_select(name='rating', default=5) -%}
+  {% set options = [
+    (5, 'отлично'),
+    (4, 'хорошо'),
+    (3, 'удовлетворительно'),
+    (2, 'неудовлетворительно'),
+    (1, 'плохо'),
+    (0, 'ужасно'),
+  ] %}
+  <select class="form-select" id="{{ name }}" name="{{ name }}" required>
+    {% for val, label in options %}
+      <option value="{{ val }}" {% if val == default %}selected{% endif %}>
+        {{ label }}
+      </option>
+    {% endfor %}
+  </select>
+{%- endmacro %}

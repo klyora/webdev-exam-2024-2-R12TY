@@ -1,0 +1,22 @@
+<div class="modal fade" id="deleteBookModal" tabindex="-1" aria-labelledby="deleteBookModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="deleteBookForm" method="post" action="#">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteBookModalLabel">Удаление книги</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">
+            Вы уверены, что хотите удалить книгу
+            <span class="fw-semibold" id="deleteBookTitle">{название книги}</span>?
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Нет</button>
+          <button type="submit" class="btn btn-danger">Да</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

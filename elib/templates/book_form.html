@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from "_macros.html" import book_fields %}
+
+{% if mode == 'create' %}
+  {% set page_title = 'Добавление книги' %}
+{% else %}
+  {% set page_title = 'Редактирование книги' %}
+{% endif %}
+
+{% block title %}{{ page_title }} — Электронная библиотека{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10 col-xl-9">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h4 mb-3">{{ page_title }}</h1>
+
+        {% if mode == 'create' %}
+          <form method="post" action="{{ url_for('books.book_create') }}" enctype="multipart/form-data" novalidate>
+        {% else %}
+          <form method="post" action="{{ url_for('books.book_update', book_id=book.id) }}" novalidate>
+        {% endif %}
+
+          {{ book_fields(mode=mode, book=book, genres=genres, selected_genres=selected_genres, form=form) }}
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            {% if mode == 'edit' %}
+              <a href="{{ url_for('books.book_view', book_id=book.id) }}" class="btn btn-outline-secondary">Отмена</a>
+            {% else %}
+              <a href="{{ url_for('books.index') }}" class="btn btn-outline-secondary">Отмена</a>
+            {% endif %}
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {% if mode == 'edit' and book.cover and book.cover.filename %}
+      <div class="mt-3 d-flex align-items-center">
+        <img src="{{ url_for('static', filename='covers/' ~ book.cover.filename) }}"
+             alt="Обложка"
+             class="rounded me-3"
+             style="width:96px;height:128px;object-fit:cover;">
+        <div class="text-muted small">
+          Обложка не редактируется. Чтобы заменить обложку, удалите книгу и создайте заново.
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

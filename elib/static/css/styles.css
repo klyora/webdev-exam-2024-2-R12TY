@@ -1,0 +1,43 @@
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.navbar-brand {
+  letter-spacing: 0.2px;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+}
+
+.prose p {
+  margin-bottom: 0.75rem;
+}
+
+.prose pre,
+.prose code {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.badge + .badge {
+  margin-left: 0.25rem;
+}
+
+.alert {
+  margin-bottom: 1rem;
+}
+
+img.rounded {
+  border-radius: 0.5rem !important;
+}
+
+.table .btn {
+  padding: 0.2rem 0.5rem;
+}
+
+.pagination .page-link {
+  min-width: 2.25rem;
+  text-align: center;
+}

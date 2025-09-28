@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_macros.html" import rating_select %}
+
+{% block title %}Новая рецензия — Электронная библиотека{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h4 mb-3">Новая рецензия: «{{ book.title }}»</h1>
+
+        <form method="post" action="{{ url_for('reviews.review_create', book_id=book.id) }}">
+          <div class="mb-3">
+            <label for="rating" class="form-label">Оценка</label>
+            {{ rating_select(name='rating', default=default_rating or 5) }}
+            <div class="form-text">
+              На сервер передаётся число от 0 до 5; пользователю показываются названия.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="text" class="form-label">Текст рецензии (Markdown)</label>
+            <textarea id="text" name="text" class="form-control" rows="8" required data-markdown="1"></textarea>
+            <div class="form-text">
+              Поддерживается Markdown. Опасные теги будут автоматически очищены.
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <a href="{{ url_for('books.book_view', book_id=book.id) }}" class="btn btn-outline-secondary">Отмена</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

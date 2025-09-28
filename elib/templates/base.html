@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Электронная библиотека{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+    crossorigin="anonymous"
+  >
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand fw-semibold" href="{{ url_for('books.index') }}">Э-Библиотека</a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+              aria-controls="mainNavbar" aria-expanded="false" aria-label="Переключить навигацию">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link{% if request.endpoint=='books.index' %} active{% endif %}" href="{{ url_for('books.index') }}">
+              Главная
+            </a>
+          </li>
+
+          {% if current_user.is_authenticated and current_user.role.name == 'User' %}
+            <li class="nav-item">
+              <a class="nav-link{% if request.endpoint=='reviews.my_reviews' %} active{% endif %}"
+                 href="{{ url_for('reviews.my_reviews') }}">
+                Мои рецензии
+              </a>
+            </li>
+          {% endif %}
+
+          {% if current_user.is_authenticated and current_user.role.name in ['Moderator','Admin'] %}
+            <li class="nav-item">
+              <a class="nav-link{% if request.endpoint in ['reviews.moderation_queue','reviews.moderation_review'] %} active{% endif %}"
+                 href="{{ url_for('reviews.moderation_queue') }}">
+                Модерация рецензий
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+
+        <ul class="navbar-nav ms-auto">
+          {% if current_user.is_authenticated %}
+            <li class="nav-item d-flex align-items-center me-2">
+              <span class="navbar-text text-light small">
+                {{ current_user_full_name or 'Пользователь' }}
+              </span>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-outline-light btn-sm" href="{{ url_for('auth.logout') }}">Выйти</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="btn btn-outline-light btn-sm" href="{{ url_for('auth.login', next=request.url) }}">Войти</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container my-4 flex-grow-1">
+    {% include "_flash.html" %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="bg-light border-top py-3 mt-auto">
+    <div class="container d-flex justify-content-between align-items-center">
+      <small class="text-muted">{{ author_signature }}</small>
+      <small class="text-muted">© {{ 2025 }}</small>
+    </div>
+  </footer>
+
+  {% include "_modals.html" %}
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/easy_mde_init.js') }}"></script>
+  {% block body_extra %}{% endblock %}
+</body>
+</html>

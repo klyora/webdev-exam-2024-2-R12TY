@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Рецензия: {{ r.book.title }}{% endblock %}
+{% block content %}
+<h1 class="h4 mb-3">Рецензия к книге «{{ r.book.title }}»</h1>
+
+<div class="mb-2 text-muted">
+  Автор: {{ r.user.full_name if r.user else r.user_id }} ·
+  Оценка: {{ r.rating }} ·
+  Дата: {{ r.created_at.strftime('%d.%m.%Y %H:%M') }}
+</div>
+
+<div class="card mb-3">
+  <div class="card-body">
+    {{ text_html | safe }}
+  </div>
+</div>
+
+<div class="d-flex gap-2">
+  <form method="post" action="{{ url_for('reviews.moderation_reject', review_id=r.id) }}">
+    <button type="submit" class="btn btn-outline-danger">Отклонить</button>
+  </form>
+  <form method="post" action="{{ url_for('reviews.moderation_approve', review_id=r.id) }}">
+    <button type="submit" class="btn btn-success">Одобрить</button>
+  </form>
+  <a class="btn btn-outline-secondary" href="{{ url_for('reviews.moderation_queue') }}">Назад к списку</a>
+</div>
+{% endblock %}

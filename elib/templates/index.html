@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Список книг — Электронная библиотека{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Список книг</h1>
+  {% if can_add %}
+    <a class="btn btn-primary" href="{{ url_for('books.book_new') }}">
+      Добавить книгу
+    </a>
+  {% endif %}
+</div>
+
+{% set can_edit = role_name in ['Admin','Moderator'] %}
+{% set can_delete = role_name == 'Admin' %}
+
+{% if books %}
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead class="table-light">
+        <tr>
+          <th style="width:64px;"></th>
+          <th>Название</th>
+          <th>Жанры</th>
+          <th>Год</th>
+          <th class="text-center">Средняя оценка</th>
+          <th class="text-center">Рецензий</th>
+          <th class="text-end">Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for book in books %}
+        <tr>
+          <td>
+            {% if book.cover and book.cover.filename %}
+              <img src="{{ url_for('static', filename='covers/' ~ book.cover.filename) }}"
+                   alt="Обложка"
+                   class="rounded"
+                   style="width:48px;height:64px;object-fit:cover;">
+            {% endif %}
+          </td>
+          <td class="fw-semibold">
+            {{ book.title }}
+            <div class="text-muted small">{{ book.author }}</div>
+          </td>
+          <td>
+            {% if book.genres %}
+              {% for bg in book.genres %}
+                <span class="badge text-bg-secondary">{{ bg.genre.name }}</span>
+              {% endfor %}
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </td>
+          <td>{{ book.year }}</td>
+          <td class="text-center">
+            {% if book.avg_rating_approved is not none %}
+              {{ (book.avg_rating_approved)|round(1) }}
+            {% else %}
+              —
+            {% endif %}
+          </td>
+          <td class="text-center">
+            {{ book.reviews_count_approved or 0 }}
+          </td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-primary"
+               href="{{ url_for('books.book_view', book_id=book.id) }}">Просмотр</a>
+
+            {% if can_edit %}
+              <a class="btn btn-sm btn-outline-secondary"
+                 href="{{ url_for('books.book_edit', book_id=book.id) }}">Редактировать</a>
+            {% endif %}
+
+            {% if can_delete %}
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteBookModal"
+                data-book-id="{{ book.id }}"
+                data-book-title="{{ book.title }}"
+              >Удалить</button>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% set base_url = url_for('books.index') %}
+  {% include "_pagination.html" %}
+
+{% else %}
+  <div class="alert alert-info">
+    Книг пока нет. {% if can_add %}Добавьте первую с помощью кнопки «Добавить книгу».{% endif %}
+  </div>
+{% endif %}
+
+{% endblock %}

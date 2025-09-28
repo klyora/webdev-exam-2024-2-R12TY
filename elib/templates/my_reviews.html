@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Мои рецензии{% endblock %}
+{% block content %}
+<h1 class="h4 mb-3">Мои рецензии</h1>
+{% if items %}
+  <div class="list-group">
+    {% for r in items %}
+      <div class="list-group-item">
+        <div class="d-flex justify-content-between">
+          <div>
+            <a href="{{ url_for('books.book_view', book_id=r.book.id) }}" class="fw-semibold">{{ r.book.title }}</a>
+            <div class="text-muted small">{{ r.created_at.strftime('%d.%m.%Y %H:%M') }}</div>
+          </div>
+          <div class="text-end">
+            <span class="badge text-bg-secondary me-2">Оценка: {{ r.rating }}</span>
+            <span class="badge {{ 'text-bg-warning' if r.status.name=='На рассмотрении' else ('text-bg-success' if r.status.name=='Одобрена' else 'text-bg-danger') }}">
+              {{ r.status.name }}
+            </span>
+          </div>
+        </div>
+        <div class="mt-2">{{ (r.text | markdown) | safe }}</div>
+      </div>
+    {% endfor %}
+  </div>
+  {% set base_url = url_for('reviews.my_reviews') %}
+  {% include "_pagination.html" %}
+{% else %}
+  <div class="alert alert-info">У вас ещё нет рецензий.</div>
+{% endif %}
+{% endblock %}

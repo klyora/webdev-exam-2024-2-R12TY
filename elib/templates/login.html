@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Вход — Электронная библиотека{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h4 mb-3">Вход в систему</h1>
+        <form method="post" action="{{ url_for('auth.login') }}">
+          <input type="hidden" name="next" value="{{ next_url or '' }}"/>
+
+          <div class="mb-3">
+            <label for="username" class="form-label">Логин</label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              class="form-control"
+              value="{{ username or '' }}"
+              required
+              autocomplete="username"
+              autofocus
+            >
+          </div>
+
+          <div class="mb-3">
+            <label for="password" class="form-label">Пароль</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              class="form-control"
+              required
+              autocomplete="current-password"
+            >
+          </div>
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" value="1" id="remember" name="remember">
+            <label class="form-check-label" for="remember">
+              Запомнить меня
+            </label>
+          </div>
+
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">Войти</button>
+            <a href="{{ url_for('books.index') }}" class="btn btn-outline-secondary">На главную</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="text-muted small mt-3">
+      Доступ без регистрации ограничен: главная, вход и просмотр книги. Для остальных действий необходима аутентификация.
+    </div>
+  </div>
+</div>
+{% endblock %}

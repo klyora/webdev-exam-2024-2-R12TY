@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Модерация рецензий{% endblock %}
+{% block content %}
+<h1 class="h4 mb-3">Рецензии на рассмотрении</h1>
+{% if items %}
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Книга</th>
+          <th>Пользователь</th>
+          <th>Дата</th>
+          <th class="text-end">Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in items %}
+          <tr>
+            <td>{{ r.book.title }}</td>
+            <td>{{ r.user.full_name if r.user else r.user_id }}</td>
+            <td>{{ r.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+            <td class="text-end">
+              <a class="btn btn-sm btn-primary" href="{{ url_for('reviews.moderation_review', review_id=r.id) }}">
+                Рассмотреть
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% set base_url = url_for('reviews.moderation_queue') %}
+  {% include "_pagination.html" %}
+{% else %}
+  <div class="alert alert-info">Ничего на рассмотрении.</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,51 @@
+{% macro page_link(page_num, label=None, disabled=False, active=False, base_url='/' ) -%}
+  {%- set cls = 'page-item' -%}
+  {%- if disabled %}{% set cls = cls + ' disabled' %}{% endif -%}
+  {%- if active %}{% set cls = cls + ' active' %}{% endif -%}
+  {%- set href = base_url ~ '?page=' ~ page_num -%}
+  <li class="{{ cls }}">
+    {% if disabled %}
+      <span class="page-link">{{ label or page_num }}</span>
+    {% else %}
+      <a class="page-link" href="{{ href }}">{{ label or page_num }}</a>
+    {% endif %}
+  </li>
+{%- endmacro %}
+
+{% set total_pages = ((total - 1) // page_size) + 1 if total else 1 %}
+{% if total_pages < 1 %}{% set total_pages = 1 %}{% endif %}
+
+{% if total_pages > 1 %}
+<nav aria-label="Постраничная навигация">
+  <ul class="pagination justify-content-center">
+
+    {{ page_link(1, '«', disabled=(page <= 1), base_url=base_url) }}
+    {{ page_link(page-1 if page>1 else 1, '‹', disabled=(page <= 1), base_url=base_url) }}
+
+    {% set start = page - 2 if page - 2 > 1 else 1 %}
+    {% set end = page + 2 if page + 2 < total_pages else total_pages %}
+
+    {% if start > 1 %}
+      {{ page_link(1, '1', active=(page==1), base_url=base_url) }}
+      {% if start > 2 %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+    {% endif %}
+
+    {% for p in range(start, end + 1) %}
+      {{ page_link(p, label=p|string, active=(p==page), base_url=base_url) }}
+    {% endfor %}
+
+    {% if end < total_pages %}
+      {% if end < total_pages - 1 %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+      {{ page_link(total_pages, label=total_pages|string, active=(page==total_pages), base_url=base_url) }}
+    {% endif %}
+
+    {{ page_link(page+1 if page<total_pages else total_pages, '›', disabled=(page >= total_pages), base_url=base_url) }}
+    {{ page_link(total_pages, '»', disabled=(page >= total_pages), base_url=base_url) }}
+
+  </ul>
+</nav>
+{% endif %}
