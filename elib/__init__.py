@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -54,9 +54,10 @@ def create_app(config_class: type[Config] = Config) -> Flask:
 
     @app.errorhandler(404)
     def not_found(_e):
-        from flask import redirect, url_for, flash
-        flash("Страница не найдена.", "warning")
-        return redirect(url_for("books.index"))
+        p = request.path or ""
+        if p == "/favicon.ico" or p.startswith("/static/"):
+            return ("", 404)
+        return render_template("404.html"), 404
 
     @app.errorhandler(413)
     def payload_too_large(_e):
@@ -73,3 +74,4 @@ def load_user(user_id: str):
     if not user_id:
         return None
     return db.session.get(User, int(user_id))
+
